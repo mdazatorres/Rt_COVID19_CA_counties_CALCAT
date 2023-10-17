@@ -137,6 +137,9 @@ def plot_Rt_r(county, per, ax):
 
 
 def plot_Rts():
+    readpath = 'data/'
+    data = pd.read_csv(readpath + 'ww_cases_daily.csv')
+    counties = data.County.unique()
     fig, axes = plt.subplots(nrows=10, ncols=3, figsize=(12, 8), sharex=True, sharey=True)
 
     # Flatten the 2D array of subplots into a 1D array
@@ -161,25 +164,14 @@ def plot_Rts():
     plt.show()  # Display the combined subplot
 
 
-# plot_Rts()
 
 
-
+"""
+## Run for first time
 readpath = 'data/'
 data = pd.read_csv(readpath + 'ww_cases_daily.csv')
 counties = data.County.unique()
 
-# i=5
-# county = counties[i]
-# res_dict = pd.read_csv('output/' + 'res_epoch_county.csv', index_col='County')
-# res_, per = res_dict.loc[county]
-# mcmc = mcmc_main(county=county, per=per)
-# est_Rt = pd.read_csv(mcmc.savepath + county + '_per_' + str(per) + '_Rt.csv')
-#mcmc.county_data
-#print(county)
-#df_Rt = save_Rt_all(county, all=False)
-#i = 0
-"""
 for i in range(len(counties)):
     county = counties[i]
     print(county)
@@ -187,24 +179,26 @@ for i in range(len(counties)):
 """
 
 """
+readpath = 'data/'
+data = pd.read_csv(readpath + 'ww_cases_daily.csv')
+counties = data.County.unique()
+
+Run every time when new data are available
 for i in range(len(counties)):
     county = counties[i]
     print(county)
-    df_Rt = save_Rt_all(county, all=False) 
+    df_Rt = save_Rt_all(county, all=True) 
 """
 
 
-#res_, per = res_dict.loc[county]
 plot_Rts()
-
+# i=5
+# county = counties[i]
+# res_dict = pd.read_csv('output/' + 'res_epoch_county.csv', index_col='County')
+# res_, per = res_dict.loc[county]
+# mcmc = mcmc_main(county=county, per=per)
+# est_Rt = pd.read_csv(mcmc.savepath + county + '_per_' + str(per) + '_Rt.csv')
 #print(county)
-
-#
-#fig, ax = plt.subplots(num=1, figsize=(12, 5))
-#plot_Rt_r(county, per+1, ax)
-#plt.title(county)
-
-
-
+#df_Rt = save_Rt_all(county, all=False)
 
 
