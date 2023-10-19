@@ -30,6 +30,8 @@ data_Rt_ww_CA.csv: A dataset containing computed Rt values for all counties in C
 
 ### Dictionary:
 Date: The date corresponding to the Rt computed.
+Date_per: We added a new column on October 19, 2023, which displays the date of the data period used to compute the Rt.
+Before this period, the column was empty because the model had been running without it.
 
 County: The name of the county in California for which the Rt estimation was made.
 
