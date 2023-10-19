@@ -26,23 +26,19 @@ def save_output(county, all):
         mcmc.RunMCMC()
 
 
-readpath = '../output/'
-data = pd.read_csv(readpath + 'ww_cases_daily.csv')
-counties = data.County.unique()
+# Run this every Thrusday
+def Run_mcmc(all):
+    readpath = 'data/'
+    data = pd.read_csv(readpath + 'ww_cases_daily.csv')
+    data = pd.read_csv(readpath + 'ww_cases_daily.csv')
+    counties = data.County.unique()
+
+    for county in counties:
+        print(county)
+        save_output(county=county, all=all)
 
 
 
-#i = 34
-
-#county=counties[i]
-county='Shasta' #Marin
-print(county)
-
-#mcmc = mcmc_main(county=county, per=0)
-save_output(county=county, all=True)
-
-
-
-
+#Run_mcmc(all=False)
 
 

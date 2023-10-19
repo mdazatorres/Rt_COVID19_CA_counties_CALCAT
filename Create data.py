@@ -4,7 +4,7 @@ import datetime
 import pgeocode
 save_path = "data/"
 read_path = "data/"
-donwload =False
+donwload = True
 if donwload:
     data_all_ww = pd.read_csv( "https://data.ca.gov/dataset/b8c6ee3b-539d-4d62-8fa2-c7cd17c16656/resource/16bb2698-c243-4b66-a6e8-4861ee66f8bf/download/master-covid-public.csv")
     data_all_ww.to_csv(read_path + 'data_cdph.csv')
@@ -20,13 +20,31 @@ else:
 cols_scan = ['Date', 'City', 'zipcode', 'Population_Served', 'Plant', 'SC2_N_norm_PMMoV', 'SC2_N_gc_g_dry_weight', 'PMMoV_gc_g_dry_weight', "County_FIPS"]
 cols_CDPH = ['Date', 'Plant', 'Population_Served', 'County', 'zipcode', 'pcr_gene_target',  'SC2_N_gc_g_dry_weight', 'PMMoV_gc_g_dry_weight']
 
-del_counties = ['San Joaquin',  'Ventura','Mono', 'Butte', 'Placer', 'Mariposa','Plumas', 'Sutter','Shasta']
-# we deleded Butte, Placer, Plumas and Sutter because has less than 42 data that is the minimum data to use the model
-# Marpisa a bif gap
+#del_counties = ['San Joaquin',  'Ventura', 'Mono', 'Butte', 'Placer', 'Mariposa',  'Plumas', 'Sutter','Shasta','Kern','Imperial']
+
+del_counties = ['San Joaquin', 'Ventura', 'Mono', 'Placer', 'Mariposa',  'Plumas', 'Sutter','Shasta','Kern','Imperial']
+
+
+
+# San Joaquin 37 data ( as october 18)
 # Ventura does not have PPMoV
-# San Joaquin these data have big gaps
 # Mono does not have the positivity rate
+# we deleded folowing counties for having  less than 42 data that is the minimum data to use the model
+# Butte lagest Plant -- 13 data
+# Placer 5 data ( as october 18)
+# Mariposa -- 13 data  ( as october 18)
+#--------------
+# Plumas I am going to run again
+# Sutter 17 data ( as october 18)
+# Shasta 19 data ( as october 18)
+# Kern, Imperial no data anymore
+
+
 # Rename columns in the scan data to match the CDPH data columns
+
+
+# For Butte we are going to use 'OrovilleSC' instead of 'Chico_WPCP', that is the largest WWTP
+#
 data_all_ww_scan = data_all_ww_scan.rename(
                         columns={'Collection_Date': 'Date', 'Zipcode': 'zipcode', 'Plant':'City_loc', 'Site_Name': 'Plant'})
 
@@ -79,6 +97,7 @@ def get_data_SARS(save):
 
     plant_n1 = ['LACSD_Jnt', 'LASAN_Hyp', 'SDPU_PtLom', 'Oxnard_WWTP']
     wwtp = [plant for plant in plants_all if plant not in plant_n1]
+
 
     for i in range (len(wwtp)):
         datap = data_all_ww[data_all_ww['Plant'] == wwtp[i]]
@@ -198,11 +217,6 @@ def add_county_name_scan(data):
     return data
 
 
-#data_cdph = get_data_SARS(save=True)
-#data_cdph_scan = joint_scan_cdph(save=True)
-
-#data1 = save_data_zipcode(data=data_cdph, cdph=True)
-#data2 = save_data_zipcode(data=data_cdph_scan, cdph=False)
 
 def Create_CA_ww_data_largest_pop(cdph_scan):
     if cdph_scan:
@@ -214,12 +228,13 @@ def Create_CA_ww_data_largest_pop(cdph_scan):
         data_all_ww= add_county_norm(data=data_cdph, cdph_scan=False)
         save_name= '_cdph_'
 
-
-
     new_date = pd.to_datetime('2022-10-04')
     #data_all_ww['Date'] = pd.to_datetime(data_all_ww['Date'])
 
     data_all_ww_scan_c = add_county_name_scan(data=data_all_ww_scan)
+
+    ### delete the largest plant for butte
+    data_all_ww = data_all_ww[data_all_ww.Plant != 'Chico_WPCP']
 
     ######### Add san diego from scan
     data_all_ww = data_all_ww[data_all_ww.County!='San Diego']

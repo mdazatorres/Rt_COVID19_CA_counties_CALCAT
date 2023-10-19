@@ -10,8 +10,8 @@ import datetime
 import math
 
 
-plt.rcParams['font.size'] = 11
-font_xylabel = 11
+plt.rcParams['font.size'] = 12
+font_xylabel = 12
 
 shift = 0
 workdir = "../"
@@ -27,6 +27,7 @@ def save_Rt(county, per, forcast, save=False):
     city_data['Date'] = pd.to_datetime(city_data['Date'])
 
     data_per = city_data[(city_data['Date'] >= init_per) & (city_data['Date'] <= end_per)]
+    data_per =data_per.reset_index(drop=True)
     Xtest = mcmc.getX(init_per, end_per)
 
     output_theta = output_mcmc[:, :-1]
@@ -45,6 +46,8 @@ def save_Rt(county, per, forcast, save=False):
 
     ch_time_varying_pr = covid19.r_covid(davisdf_pr)
     ch_time_varying_pr['Date'] = ch_time_varying_pr.index + pd.DateOffset(days=shift)
+    n_rt=ch_time_varying_pr['Date'].shape[0]
+    ch_time_varying_pr['Date_per'] = pd.to_datetime(data_per.Date.iloc[-n_rt:].values)
     if save:
         ch_time_varying_pr.to_csv(mcmc.savepath + county + '_per_' + str(per) + '_Rt.csv', index=False)
     return ch_time_varying_pr
@@ -64,8 +67,8 @@ def save_Rt_csv(county, per, forcast,  all):
         data_Rt_window = save_Rt(county, per=i, forcast=0)
         data_Rt['Date'] = pd.to_datetime(data_Rt['Date'])
         data_Rt = pd.concat([data_Rt, data_Rt_window])
-        data_Rt[['Date', 'Q0.025', 'Q0.5', 'Q0.975']].to_csv(mcmc.savepath + county + '_per_' + str(per) + '_Rt.csv', index=False)
-        data_Rt[-80:].to_csv('output_CALCAT/' + county + '_Rt.csv', index=False)
+        data_Rt[['Date', 'Q0.025', 'Q0.5', 'Q0.975', 'Date_per']].to_csv(mcmc.savepath + county + '_per_' + str(per) + '_Rt.csv', index=False)
+        data_Rt[['Date', 'Q0.025', 'Q0.5', 'Q0.975', 'Date_per']][-80:].to_csv('output_CALCAT/' + county + '_Rt.csv', index=False)
 
     else:
         if forcast == 0:
@@ -76,7 +79,7 @@ def save_Rt_csv(county, per, forcast,  all):
             init_Rt = data_Rt_window['Date'].iloc[0]
             data_Rt = data_Rt[data_Rt['Date'] < init_Rt]
 
-            data_Rt = pd.concat([data_Rt, data_Rt_window[['Date', 'Q0.025', 'Q0.5', 'Q0.975']]])
+            data_Rt = pd.concat([data_Rt, data_Rt_window[['Date', 'Q0.025', 'Q0.5', 'Q0.975', 'Date_per']]])
             data_Rt.to_csv(mcmc.savepath + county + '_per_' + str(per) + '_Rt.csv', index=False)
             data_Rt[-80:].to_csv('output_CALCAT/' + county + '_Rt.csv', index=False)
 
@@ -88,7 +91,7 @@ def save_Rt_csv(county, per, forcast,  all):
             init_Rt = data_Rt_window['Date'].iloc[0]
             data_Rt = data_Rt[data_Rt['Date'] < init_Rt]
 
-            data_Rt = pd.concat([data_Rt, data_Rt_window[['Date', 'Q0.025', 'Q0.5', 'Q0.975']]])
+            data_Rt = pd.concat([data_Rt, data_Rt_window[['Date', 'Q0.025', 'Q0.5', 'Q0.975', 'Date_per']]])
             data_Rt.to_csv(mcmc.savepath + county + '_per_' + str(per) + '_Rt.csv', index=False)
             data_Rt[-80:].to_csv('output_CALCAT/' + county + '_Rt.csv', index=False)
 
@@ -127,12 +130,14 @@ def plot_Rt_r(county, per, ax):
     #fig, ax = subplots(num=1, figsize=(12, 5))
     mcmc = mcmc_main(county=county, per=per)
     est_Rt =  pd.read_csv(mcmc.savepath + county + '_per_' + str(per) + '_Rt.csv')
+    est_Rt= est_Rt[-80:]
     est_Rt['Date'] = pd.to_datetime(est_Rt['Date'])
     ax.plot(est_Rt['Date'], est_Rt['Q0.5'], color='b')
     ax.fill_between(est_Rt['Date'], est_Rt['Q0.025'], est_Rt['Q0.975'], facecolor='b', alpha=0.2, hatch= '/', edgecolor='b')
     ax.grid(color='gray', linestyle='--', alpha=0.2)
+    ax.axhline(y=1,lw=0.5, color='r', ls='--')
     plt.setp(ax.get_xticklabels(), rotation=0, ha="left", rotation_mode="anchor")
-    ax.xaxis.set_major_formatter(mdates.DateFormatter('%b %d %y'))
+    ax.xaxis.set_major_formatter(mdates.DateFormatter('%b %d'))
     ax.tick_params(which='major', axis='x')
 
 
@@ -140,6 +145,8 @@ def plot_Rts():
     readpath = 'data/'
     data = pd.read_csv(readpath + 'ww_cases_daily.csv')
     counties = data.County.unique()
+    counties= counties[counties!='Imperial']
+    counties = counties[counties != 'Kern']
     fig, axes = plt.subplots(nrows=10, ncols=3, figsize=(12, 8), sharex=True, sharey=True)
 
     # Flatten the 2D array of subplots into a 1D array
@@ -165,6 +172,38 @@ def plot_Rts():
 
 
 
+def plot_Rts1():
+    readpath = 'data/'
+    data = pd.read_csv(readpath + 'ww_cases_daily.csv')
+    counties = data.County.unique()
+    counties= counties[counties!='Imperial']
+    counties = counties[counties != 'Kern']
+    counties=counties[:4]
+    fig, axes = plt.subplots(nrows=2, ncols=2, figsize=(12, 8), sharex=True, sharey=True)
+
+    # Flatten the 2D array of subplots into a 1D array
+    axes = axes.ravel()
+    date_one = pd.to_datetime('2023-10-12')
+    current_date = pd.to_datetime(datetime.date.today())
+
+    # Loop through the counties and generate plots
+    for i, county in enumerate(counties):
+        res_dict = pd.read_csv('output/' + 'res_epoch_county.csv', index_col='County')
+        res_, per = res_dict.loc[county]
+        k = math.floor((current_date - date_one).days / 7)
+        plt.sca(axes[i])  # Set the current subplot
+        plot_Rt_r(county, per+k, ax=axes[i])
+        plt.title(county)  # Set the title for the subplot
+
+    # Remove any unused subplots
+    for i in range(len(counties), len(axes)):
+        fig.delaxes(axes[i])
+
+    plt.tight_layout()  # Adjust subplot layout
+    plt.show()  # Display the combined subplot
+
+
+#df_Rt = save_Rt_all('Butte', all=True)
 
 """
 ## Run for first time
@@ -178,20 +217,20 @@ for i in range(len(counties)):
     df_Rt = save_Rt_all(county, all=True) 
 """
 
-"""
+#"""
 readpath = 'data/'
 data = pd.read_csv(readpath + 'ww_cases_daily.csv')
 counties = data.County.unique()
 
-Run every time when new data are available
+#Run every time when new data are available
 for i in range(len(counties)):
     county = counties[i]
     print(county)
-    df_Rt = save_Rt_all(county, all=True) 
-"""
+    df_Rt = save_Rt_all(county, all=False)
+#"""
 
-
-plot_Rts()
+#plot_Rts1()
+#plot_Rts()
 # i=5
 # county = counties[i]
 # res_dict = pd.read_csv('output/' + 'res_epoch_county.csv', index_col='County')

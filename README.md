@@ -39,6 +39,14 @@ Rt_LCI: The Lower Confidence Interval (LCI) associated with the Rt estimation. I
 
 Rt_UCI: The Upper Confidence Interval (UCI) associated with the Rt estimation. It represents the upper bound of the confidence interval for the Rt value, indicating the range of uncertainty.
 
+### Auxiliary programs
+
+- pytwalk.py
+Library for the t-walk MCMC algorithm. For more details about this library see https://www.cimat.mx/~jac/twalk/
+
+- epyestim
+A Python library Epyestim helps us with this task by calculating the effective reproduction rate for the reported COVID-19 cases. . For more details about this library see https://github.com/lo-hfk/epyestim
+
 #### Note:
 Before running this file, you need to run the following codes in this order:
 

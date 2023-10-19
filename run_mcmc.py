@@ -84,8 +84,23 @@ class mcmc_main:
     def compute_res(self, county):
         counties= self.data.County.unique()
         if os.path.isfile(self.savepath + 'res_epoch_county.csv'):
-            res_dict = pd.read_csv(self.savepath + 'res_epoch_county.csv', index_col='County')
-            res, epoch = res_dict.loc[county]
+            res_dict = pd.read_csv(self.savepath + 'res_epoch_county.csv', index_col='County').to_dict(orient='index')
+
+            if county in res_dict:
+                res, epoch = res_dict[county]['res'], res_dict[county]['epoch']
+            else:
+                county_data = self.data[self.data['County'] == county]
+                epoch = (county_data.shape[0] - self.num_data) // (self.size_window - 1) + 1
+                res = (county_data.shape[0] - self.num_data) % (self.size_window - 1)
+                res_dict[county] = {'res': res, 'epoch': epoch}
+
+                # Convert the dictionary back to a DataFrame and update the CSV file
+                res_df = pd.DataFrame.from_dict(res_dict, orient='index')
+                res_df.index.name = 'County'
+                res_df.to_csv(self.savepath + 'res_epoch_county.csv')
+
+            #res_dict = pd.read_csv(self.savepath + 'res_epoch_county.csv', index_col='County')
+            #res, epoch = res_dict.loc[county]
 
         else:
             res_dict = {}
@@ -399,14 +414,5 @@ class mcmc_main:
         return Output_theta
 
 
-"""
-for i in range(30):
-    i=29+i
-    mcmc = mcmc_main(county='San Diego', per=i)
-    mcmc.RunMCMC()
-"""
-
-# data_ww_new_city=data_ww_new[['SampleDate', 'City', 'NormalizedConc_crude','NormalizedConc', 'N_gene', 'S_gene','BCoV Recovery', 'positives', 'positives_crude','Testing']]
 
 
-mcmc = mcmc_main(county='Yolo', per=0)
