@@ -38,8 +38,8 @@ class mcmc_main:
 
         self.init = self.init0 + timedelta(days=self.per * (self.size_window - 1))
 
-        self.city_data = self.read_data()
-        self.y_data, self.X, self.city_data = self.read_data()
+        #self.city_data = self.read_data()
+        self.y_data, self.X, self.city_data = self.read_data(self.county_data)
         self.n = len(self.y_data)
 
         self.n_sample = 3000
@@ -117,8 +117,8 @@ class mcmc_main:
 
 
 
-    def read_data(self):
-        county_data = self.county_data
+    def read_data(self, county_data):
+        #county_data = self.county_data
 
         county_data = county_data.reset_index()
         county_data['Date'] = pd.to_datetime(county_data['Date'])
@@ -184,29 +184,32 @@ class mcmc_main:
 
     def predictive_old(self, x, X):
         nn = self.y_data.shape[0]
-        #beta0, beta1,  k, init = x
         beta0, beta1,  k = x
 
         mu = np.zeros(nn)
-        Y = np.zeros(nn)
         Xb = X[:, 1] * beta1
-        #mu[0] = self.g_inv(init)
-        mu[0] = self.g_inv(beta0 + Xb[0])
 
+        #mu[0] = self.g_inv(beta0+ Xb[0])
+
+        eta = np.zeros(nn)
+        Y = np.zeros(nn)
+        eta[0] = beta0 + Xb[0]
+        mu[0] = self.g_inv(eta[0])
         a = mu[0] * self.phi
         b = self.phi - a
         Y[0] = ss.beta.rvs(a, b)
 
         for i in range(nn - 1):
-            mu[i + 1] = self.g_inv( beta0 + Xb[i + 1] + k * self.g_inv(mu[i]))
+            eta[i + 1] = beta0 + Xb[i + 1] + k * eta[i]
             #mu[i + 1] = self.g_inv(beta0 + Xb[i + 1] + k * mu[i])
+            mu[i + 1] = self.g_inv(eta[i + 1])
             a = mu[i+1] * self.phi
             b = self.phi - a
             Y[i + 1] = ss.beta.rvs(a, b)
         return Y
 
-    def predictive(self, x, X):
-        nn = self.y_data.shape[0]
+    def predictive(self, x, X, y_pos):
+        nn = y_pos.shape[0]
         beta0, beta1,  k = x
 
         mu = np.zeros(nn)
@@ -255,8 +258,9 @@ class mcmc_main:
 
 
 
-    def eval_predictive(self, Out, conc):
-        xfunc = lambda x: self.predictive(x, conc)
+    def eval_predictive(self, Out, conc, y_pos):
+        #xfunc = lambda x: self.predictive(x, conc)
+        xfunc = lambda x: self.predictive(x, conc, y_pos)
         return np.apply_along_axis(xfunc, 1, Out)
 
     def mean_predictive(self, x, X):

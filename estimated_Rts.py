@@ -20,7 +20,7 @@ def save_Rt(county, per, forcast, save=False):
     mcmc = mcmc_main(county=county, per=per)
     output_mcmc = pickle.load(open(mcmc.savepath + county + '_per_' + str(per) + '_samples.pkl', 'rb'))
     Tmean = mcmc.Tmean
-    city_data = mcmc.county_data
+    city_data = mcmc.city_data
     init_per = mcmc.init0 + timedelta(days=per * (mcmc.size_window - 1))
     end_per = init_per + timedelta(days=mcmc.num_data + forcast)
 
@@ -29,9 +29,10 @@ def save_Rt(county, per, forcast, save=False):
     data_per = city_data[(city_data['Date'] >= init_per) & (city_data['Date'] <= end_per)]
     data_per =data_per.reset_index(drop=True)
     Xtest = mcmc.getX(init_per, end_per)
+    ypr = data_per['pos_rate_average']
 
     output_theta = output_mcmc[:, :-1]
-    Output_trace = mcmc.eval_predictive(output_theta, Xtest)
+    Output_trace = mcmc.eval_predictive(output_theta, conc=Xtest, y_pos=ypr)
 
     Q500 = np.quantile(Output_trace, 0.5, axis=0)
     Q025 = np.quantile(Output_trace, 0.025, axis=0)
@@ -109,6 +110,9 @@ def save_Rt_all(county, all):
     #current_date = pd.to_datetime('2023-10-13') #
 
     #k = math.floor((current_date - date_one).days / 7)
+    mcmc = mcmc_main(county=county, per=per)
+
+    #res_obs= (mcmc.county_data.Date.iloc[-1]- date_one).days % 7
     res = (current_date - date_one).days % 7
     if all:
         df_Rt = save_Rt_csv(county=county, per=per, forcast=0, all=True)
@@ -117,7 +121,6 @@ def save_Rt_all(county, all):
         k = math.floor((current_date - date_one).days / 7)
         if res==0:
             #current_date = pd.to_datetime(datetime.date.today())
-
             df_Rt = save_Rt_csv(county=county, per=per+k, forcast=res, all=False)
         else:
 
@@ -221,23 +224,25 @@ for i in range(len(counties)):
 readpath = 'data/'
 data = pd.read_csv(readpath + 'ww_cases_daily.csv')
 counties = data.County.unique()
+counties= counties[counties!='Del Norte']
 
+
+# elimnar del Norte
+county='Fresno'
+#county='Contra Costa'
+#county='Lake'
+#mcmc = mcmc_main(county=county, per=0)
+#mcmc.county_data
+
+#res_obs = (mcmc.county_data.Date.iloc[-1] - date_one).days % 7
+
+
+#Lake
 #Run every time when new data are available
 for i in range(len(counties)):
     county = counties[i]
     print(county)
-    df_Rt = save_Rt_all(county, all=False)
+    df_Rt = save_Rt_all(county=county, all=False)
 #"""
-
-#plot_Rts1()
-#plot_Rts()
-# i=5
-# county = counties[i]
-# res_dict = pd.read_csv('output/' + 'res_epoch_county.csv', index_col='County')
-# res_, per = res_dict.loc[county]
-# mcmc = mcmc_main(county=county, per=per)
-# est_Rt = pd.read_csv(mcmc.savepath + county + '_per_' + str(per) + '_Rt.csv')
-#print(county)
-#df_Rt = save_Rt_all(county, all=False)
 
 

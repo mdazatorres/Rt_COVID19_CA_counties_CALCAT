@@ -29,7 +29,7 @@ def save_output(county, all):
 # Run this every Thrusday
 def Run_mcmc(all):
     readpath = 'data/'
-    data = pd.read_csv(readpath + 'ww_cases_daily.csv')
+    #data = pd.read_csv(readpath + 'ww_cases_daily.csv')
     data = pd.read_csv(readpath + 'ww_cases_daily.csv')
     counties = data.County.unique()
 
