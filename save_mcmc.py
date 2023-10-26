@@ -38,7 +38,6 @@ def Run_mcmc(all):
         save_output(county=county, all=all)
 
 
-
-#Run_mcmc(all=False)
+Run_mcmc(all=False)
 
 

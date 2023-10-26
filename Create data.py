@@ -22,15 +22,15 @@ cols_CDPH = ['Date', 'Plant', 'Population_Served', 'County', 'zipcode', 'pcr_gen
 
 #del_counties = ['San Joaquin',  'Ventura', 'Mono', 'Butte', 'Placer', 'Mariposa',  'Plumas', 'Sutter','Shasta','Kern','Imperial']
 
-del_counties = ['San Joaquin', 'Ventura', 'Mono', 'Placer', 'Mariposa',  'Plumas', 'Sutter','Shasta','Kern','Imperial']
-
+del_counties = ['San Joaquin', 'Ventura', 'Mono', 'Placer', 'Mariposa',  'Plumas', 'Sutter', 'Shasta',
+                'Kern', 'Imperial', 'Del Norte']
 
 
 # San Joaquin 37 data ( as october 18)
 # Ventura does not have PPMoV
 # Mono does not have the positivity rate
-# we deleded folowing counties for having  less than 42 data that is the minimum data to use the model
-# Butte lagest Plant -- 13 data
+# we deleded following counties for having  less than 42 data that is the minimum data to use the model
+# Butte largest Plant -- 13 data
 # Placer 5 data ( as october 18)
 # Mariposa -- 13 data  ( as october 18)
 #--------------
@@ -38,11 +38,10 @@ del_counties = ['San Joaquin', 'Ventura', 'Mono', 'Placer', 'Mariposa',  'Plumas
 # Sutter 17 data ( as october 18)
 # Shasta 19 data ( as october 18)
 # Kern, Imperial no data anymore
+# Del Norte
 
 
 # Rename columns in the scan data to match the CDPH data columns
-
-
 # For Butte we are going to use 'OrovilleSC' instead of 'Chico_WPCP', that is the largest WWTP
 #
 data_all_ww_scan = data_all_ww_scan.rename(
@@ -337,41 +336,5 @@ def join_data_daily():
 
 df = join_data_daily()
 
-"""
-import seaborn as sns
-import matplotlib.pyplot as plt
-df['Date'] = pd.to_datetime(df['Date'])
 
-# Next, create subplots using FacetGrid or catplot
-g = sns.catplot(data=df, x='Date', y='SC2_N_norm_PMMoV', hue='County',
-                col='County', col_wrap=3, height=3, aspect=2)
-
-# Set labels and title for the plot
-g.set_axis_labels('Date', 'SARS-CoV-2 Data Series')
-g.set_titles(col_template="{col_name}")
-
-
-
-g2 = sns.catplot(data=df, x='Date', y='pos_rate', hue='County',
-                 col='County', col_wrap=3, height=3, aspect=2)
-
-# Set labels and title for the second plot
-g2.set_axis_labels('Date', 'Positivity Rate')
-g2.set_titles(col_template="{col_name}")
-
-# Set the overall title
-plt.subplots_adjust(top=0.9)
-g.fig.suptitle('SARS-CoV-2 Data and Positivity Rate by County')
-
-
-plt.subplots_adjust(top=0.9)
-g.fig.suptitle('SARS-CoV-2 Data Series by County')
-
-# You can add another subplot for the positivity rate in a similar way.
-# For example, if you have a column 'positivity_rate', you can replace 'y' with 'positivity_rate'.
-
-# Show the plot
-plt.show()
-
-"""
 

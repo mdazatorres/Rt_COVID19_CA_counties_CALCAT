@@ -105,13 +105,6 @@ def save_Rt_all(county, all):
     res_, per = res_dict.loc[county]
     date_one = pd.to_datetime('2023-10-12')
     current_date = pd.to_datetime(datetime.date.today())
-    #date_one = pd.to_datetime('2023-10-05') # This is a example
-    #current_date = pd.to_datetime('2023-10-06')
-    #current_date = pd.to_datetime('2023-10-13') #
-
-    #k = math.floor((current_date - date_one).days / 7)
-    mcmc = mcmc_main(county=county, per=per)
-
     #res_obs= (mcmc.county_data.Date.iloc[-1]- date_one).days % 7
     res = (current_date - date_one).days % 7
     if all:
@@ -224,11 +217,8 @@ for i in range(len(counties)):
 readpath = 'data/'
 data = pd.read_csv(readpath + 'ww_cases_daily.csv')
 counties = data.County.unique()
-counties= counties[counties!='Del Norte']
+counties = counties[counties!='Del Norte']
 
-
-# elimnar del Norte
-county='Fresno'
 #county='Contra Costa'
 #county='Lake'
 #mcmc = mcmc_main(county=county, per=0)
