@@ -225,10 +225,6 @@ counties = counties[counties!='Del Norte']
 #mcmc = mcmc_main(county=county, per=0)
 #mcmc.county_data
 
-#res_obs = (mcmc.county_data.Date.iloc[-1] - date_one).days % 7
-
-
-#Lake
 #Run every time when new data are available
 for i in range(len(counties)):
     county = counties[i]
