@@ -220,10 +220,6 @@ data = pd.read_csv(readpath + 'ww_cases_daily.csv')
 counties = data.County.unique()
 counties = counties[counties!='Del Norte']
 
-#county='Contra Costa'
-#county='Lake'
-#mcmc = mcmc_main(county=county, per=0)
-#mcmc.county_data
 
 #Run every time when new data are available
 for i in range(len(counties)):
