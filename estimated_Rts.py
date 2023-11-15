@@ -200,8 +200,6 @@ def plot_Rts1():
     plt.show()  # Display the combined subplot
 
 
-#df_Rt = save_Rt_all('Butte', all=True)
-
 """
 ## Run for first time
 readpath = 'data/'
