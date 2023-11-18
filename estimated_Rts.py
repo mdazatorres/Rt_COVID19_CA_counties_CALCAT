@@ -112,7 +112,7 @@ def save_Rt_all(county, all):
 
     else:
         k = math.floor((current_date - date_one).days / 7)
-        #res=0
+        res=0 # uncomented when run in a different day than thursday
         if res==0:
             #current_date = pd.to_datetime(datetime.date.today())
             df_Rt = save_Rt_csv(county=county, per=per+k, forcast=res, all=False)
@@ -218,10 +218,11 @@ data = pd.read_csv(readpath + 'ww_cases_daily.csv')
 counties = data.County.unique()
 counties = counties[counties!='Del Norte']
 
-
+counties = counties[counties!='Kings']
 #Run every time when new data are available
 for i in range(len(counties)):
     county = counties[i]
+
     print(county)
     df_Rt = save_Rt_all(county=county, all=False)
 #"""
