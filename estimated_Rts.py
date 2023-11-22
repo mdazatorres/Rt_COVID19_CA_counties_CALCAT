@@ -211,7 +211,6 @@ for i in range(len(counties)):
     print(county)
     df_Rt = save_Rt_all(county, all=True) 
 """
-
 #"""
 readpath = 'data/'
 data = pd.read_csv(readpath + 'ww_cases_daily.csv')
