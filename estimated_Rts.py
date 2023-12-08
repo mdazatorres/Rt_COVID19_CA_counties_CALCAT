@@ -219,7 +219,7 @@ counties = data.County.unique()
 counties = counties[counties!='Del Norte']
 
 counties = counties[counties!='Kings']
-#Run every time when new data are available
+#Run every time when new data are availabl
 for i in range(len(counties)):
     county = counties[i]
 
