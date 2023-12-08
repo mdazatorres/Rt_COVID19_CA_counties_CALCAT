@@ -112,7 +112,8 @@ def save_Rt_all(county, all):
 
     else:
         k = math.floor((current_date - date_one).days / 7)
-        #res=0 # uncomented when run in a different day than thursday
+        #k=k-1
+        res=0 # uncomented when run in a different day than thursday
         if res==0:
             #current_date = pd.to_datetime(datetime.date.today())
             df_Rt = save_Rt_csv(county=county, per=per+k, forcast=res, all=False)

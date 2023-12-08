@@ -22,6 +22,7 @@ def save_output(county, all):
 
         current_date = pd.to_datetime(datetime.date.today())
         k = math.floor((current_date - date_one).days / 7)
+        #k=k-1
         mcmc = mcmc_main(county=county, per=(per+k))
         mcmc.RunMCMC()
 
@@ -32,8 +33,9 @@ def Run_mcmc(all):
     #data = pd.read_csv(readpath + 'ww_cases_daily.csv')
     data = pd.read_csv(readpath + 'ww_cases_daily.csv')
     counties = data.County.unique()
-
+    counties = counties[counties!='Kings']
     for county in counties:
+
         print(county)
         save_output(county=county, all=all)
 

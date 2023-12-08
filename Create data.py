@@ -334,7 +334,7 @@ def join_data_daily():
     return Data_all
 
 
-df = join_data_daily()
+#df = join_data_daily()
 
 
 
